@@ -1,0 +1,195 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+/* Styles for the tabs */
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-top: 60px; /* Опущены ниже */
+}
+
+.tab {
+  padding: 10px 20px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  margin: 0 5px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.tab:hover {
+  background-color: #e0e0e0;
+}
+
+.tab.active {
+  background-color: #f0f0f0;
+  border-bottom: none;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.top-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.top-list li {
+  background: var(--list-item-bg, #fff);
+  margin: 10px auto;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 600px; /* Ограничение ширины для плашек */
+}
+
+.top-list li:nth-child(odd) {
+  background: var(--list-item-alt-bg, #f9f9f9);
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.neon-text {
+  font-family: 'Arial', sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  background: linear-gradient(90deg, #f35626, #feab02, #f35626);
+  background-size: 200% 200%;
+  animation: neon 1.5s linear infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes neon {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Dark theme styles */
+body.dark-theme .tab.active {
+  background-color: #444;
+  color: #fff;
+}
+
+body.dark-theme .tab:hover {
+  background-color: #555;
+}
+
+body.dark-theme .top-list li {
+  background: #444;
+  color: #fff;
+}
+
+body.dark-theme .top-list li:nth-child(odd) {
+  background: #555;
+}
+</style>
+
+<div class="menu-btn-container">
+    <div class="menu-btn" id="menu-btn"></div>
+    <div class="menu" id="menu">
+        <ul>
+            <li class="{% if request.path == '/' %}active{% endif %}"><a href="/"><i class="fas fa-mouse-pointer"></i></a></li>
+            <li class="{% if request.path == '/profile' %}active{% endif %}"><a href="/profile"><i class="fas fa-user"></i></a></li>
+            <li class="{% if request.path == '/tops' %}active{% endif %}"><a href="/tops"><i class="fas fa-trophy"></i></a></li>
+        </ul>
+    </div>
+</div>
+<div class="tabs">
+    <div class="tab active" data-tab="balances">Топ Балансов</div>
+    <div class="tab" data-tab="miners">Топ Майнеров</div>
+</div>
+<div class="tab-content active" id="balances">
+    <h1 class="neon-text">Топ Балансов</h1>
+    <ul class="top-list">
+        {% for player in top_balance_players %}
+        <li>
+            <img src="https://via.placeholder.com/50" alt="Avatar" class="avatar">
+            <span>{{ player[0] }}</span>
+            <span>{{ player[1] }} RD</span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+<div class="tab-content" id="miners">
+    <h1 class="neon-text">Топ Майнеров</h1>
+    <ul class="top-list">
+        {% for player in top_miner_players %}
+        <li>
+            <img src="https://via.placeholder.com/50" alt="Avatar" class="avatar">
+            <span>{{ player[0] }}</span>
+            <span>{{ player[1] }} кликов</span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Tab switching logic
+  const tabs = document.querySelectorAll(".tab");
+  const tabContents = document.querySelectorAll(".tab-content");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", function() {
+      tabs.forEach(t => t.classList.remove("active"));
+      tabContents.forEach(tc => tc.classList.remove("active"));
+
+      this.classList.add("active");
+      document.getElementById(this.getAttribute("data-tab")).classList.add("active");
+    });
+  });
+
+  // Theme switching logic with localStorage support
+  const themeSwitch = document.getElementById("theme-switch");
+
+  function updateTheme() {
+    if (localStorage.getItem("theme") === "light") {
+      document.body.classList.remove("dark-theme");
+      document.body.classList.add("light-theme");
+      themeSwitch.checked = false;
+    } else {
+      document.body.classList.remove("light-theme");
+      document.body.classList.add("dark-theme");
+      themeSwitch.checked = true;
+    }
+  }
+
+  themeSwitch.addEventListener("change", function() {
+    if (this.checked) {
+      document.body.classList.remove("light-theme");
+      document.body.classList.add("dark-theme");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.body.classList.remove("dark-theme");
+      document.body.classList.add("light-theme");
+      localStorage.setItem("theme", "light");
+    }
+    updateTheme();
+  });
+
+  updateTheme();
+});
+</script>
+{% endblock %}

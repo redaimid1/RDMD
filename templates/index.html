@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+/* Hide the default checkbox */
+.theme-toggle input[type="checkbox"] {
+  display: none;
+}
+
+/* Style the slider container */
+.theme-toggle .slider.round {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+/* Style the knob and remove its background */
+.theme-toggle .slider.round:before {
+  content: "";
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: transparent;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* Change knob position when checked (if needed) */
+.theme-toggle input[type="checkbox"]:checked + .slider.round:before {
+  transform: translateX(26px);
+}
+</style>
+
+<div class="header">
+    <div class="logo"></div>
+    <div class="theme-toggle">
+        <input type="checkbox" id="theme-switch">
+        <label for="theme-switch" class="slider round"></label>
+    </div>
+</div>
+<div class="menu-btn-container">
+    <div class="menu-btn" id="menu-btn"></div>
+    <div class="menu" id="menu">
+        <ul>
+            <li class="{% if request.path == '/' %}active{% endif %}">
+                <a href="/"><i class="fas fa-mouse-pointer"></i></a>
+            </li>
+            <li class="{% if request.path == '/profile' %}active{% endif %}">
+                <a href="/profile"><i class="fas fa-user"></i></a>
+            </li>
+            <li class="{% if request.path == '/tops' %}active{% endif %}">
+                <a href="/tops"><i class="fas fa-trophy"></i></a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="balance">
+    Balance: {{ balance }}
+</div>
+<div class="total-balance">
+    Total Balance: {{ total_balance }}
+</div>
+<div class="clicks">
+    Clicks: {{ clicks }}
+</div>
+<div class="button-container">
+    <form action="{{ url_for('click') }}" method="post">
+        <button type="submit" class="round-button">Press Me!</button>
+    </form>
+</div>
+{% endblock %}
